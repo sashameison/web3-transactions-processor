@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: web3-transaction-processor
+
+  data:
+    elasticsearch:
+      client:
+        uris: http://localhost:9200
+
+  datasource:
+    hikari:
+      minimumIdle: 1
+      maximum-pool-size: 5
+      idle-timeout: 60000
+    url: jdbc:postgresql://localhost:5432/web3-db
+    username: username
+    password: password
+
+
+  jpa:
+    properties.hibernate:
+      jdbc:
+        batch_size: 500
+      order_inserts: true
+    hibernate.ddl-auto: validate
+    open-in-view: false
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKER_URL:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: web3_eth_consumer_group
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      enable-auto-commit: true
+      auto-commit-interval: 5000ms
+      max-poll-records: ${KAFKA_MAX_POLL_RECORDS:500}
+      properties:
+        max-poll-interval-ms: ${KAFKA_MAX_POLL_INTERVAL_MS:300000}
+        spring:
+          deserializer:
+            key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+            value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+          json:
+            trusted.packages: '*'
+    topic:
+      name: eth-transactions
+
+logging:
+  level:
+    root: INFO
+
+arb:
+  endpoint:
+    url: https://arbitrum-one.rpc.grove.city/v1/dccc76f8
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    page: /swagger-ui.html
+    enabled: true
+
