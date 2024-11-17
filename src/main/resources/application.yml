@@ -2,10 +2,9 @@ spring:
   application:
     name: web3-transaction-processor
 
-  data:
-    elasticsearch:
-      client:
-        uris: http://localhost:9200
+  elasticsearch:
+    username: elastic
+    password: password
 
   datasource:
     hikari:
@@ -32,8 +31,8 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       group-id: web3_eth_consumer_group
-      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       enable-auto-commit: true
       auto-commit-interval: 5000ms
       max-poll-records: ${KAFKA_MAX_POLL_RECORDS:500}
@@ -51,6 +50,7 @@ spring:
 logging:
   level:
     root: INFO
+    org.springframework.data.elasticsearch: DEBUG
 
 arb:
   endpoint:
